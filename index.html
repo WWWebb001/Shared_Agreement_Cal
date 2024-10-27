@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WWWebb's Shared Agreement Monthly Payment Calculator</title>
+    <style>
+        /* Styles remain the same as before, but you can adjust them as needed */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f5;
+            margin: 0;
+            padding: 0;
+        }
+        .banner {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 30px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .container h2 {
+            color: #2c3e50;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+        }
+        .calculate-button {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .calculate-button:hover {
+            background-color: #2ecc71;
+        }
+        .results {
+            margin-top: 30px;
+        }
+        .results h3 {
+            color: #2c3e50;
+        }
+        .results .section {
+            margin-bottom: 20px;
+        }
+        .results .section h4 {
+            color: #2c3e50;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+        .results .section p {
+            color: #34495e;
+            font-size: 18px;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="banner">
+    <h1>WWWebb's Shared Agreement Monthly Payment Calculator</h1>
+</div>
+
+<div class="container">
+    <h2>Enter Your Details</h2>
+    <div class="input-group">
+        <label for="propertyValue">Total Property Value (£):</label>
+        <input type="number" id="propertyValue" placeholder="e.g., 300000">
+    </div>
+    <div class="input-group">
+        <label for="sharePurchased">Percentage Share Being Purchased (%):</label>
+        <input type="number" id="sharePurchased" placeholder="e.g., 50">
+    </div>
+    <div class="input-group">
+        <label for="deposit">Deposit (£):</label>
+        <input type="number" id="deposit" placeholder="e.g., 15000">
+    </div>
+    <div class="input-group">
+        <label for="mortgageTerm">Mortgage Term (Years):</label>
+        <input type="number" id="mortgageTerm" placeholder="e.g., 25">
+    </div>
+    <div class="input-group">
+        <label for="apr">APR (%):</label>
+        <input type="number" id="apr" placeholder="e.g., 3.5">
+    </div>
+    <div class="input-group">
+        <label for="rent">Monthly Rent (£):</label>
+        <input type="number" id="rent" placeholder="e.g., 400">
+    </div>
+    <div class="input-group">
+        <label for="serviceCharge">Monthly Service Charge (£):</label>
+        <input type="number" id="serviceCharge" placeholder="e.g., 50">
+    </div>
+    <button class="calculate-button" onclick="calculate()">Calculate</button>
+
+    <div class="results" id="results" style="display:none;">
+        <h3>Calculation Results</h3>
+        <div class="section">
+            <h4>Ownership Details</h4>
+            <p id="ownedShare"></p>
+            <p id="totalMortgage"></p>
+            <p id="initialEquity"></p>
+        </div>
+        <div class="section">
+            <h4>Monthly Payments</h4>
+            <p id="monthlyMortgagePayment"></p>
+            <p id="monthlyRent"></p>
+            <p id="totalMonthlyPayment"></p>
+        </div>
+        <div class="section">
+            <h4>Equity Projection After 5 Years</h4>
+            <p id="projectedPropertyValue"></p>
+            <p id="equityFromGrowth"></p>
+            <p id="principalPaid"></p>
+            <p id="totalEquityAfterFiveYears"></p>
+            <p id="equityGained"></p>
+            <p id="growthSummary"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function calculate() {
+        // Get user inputs
+        var propertyValue = parseFloat(document.getElementById('propertyValue').value);
+        var sharePurchased = parseFloat(document.getElementById('sharePurchased').value) / 100;
+        var deposit = parseFloat(document.getElementById('deposit').value);
+        var mortgageTerm = parseFloat(document.getElementById('mortgageTerm').value);
+        var apr = parseFloat(document.getElementById('apr').value) / 100;
+        var rent = parseFloat(document.getElementById('rent').value);
+        var serviceCharge = parseFloat(document.getElementById('serviceCharge').value);
+
+        // Fetch current property price forecasts (simulated here with sample data)
+        var forecastedAnnualGrowthRates = await getPropertyPriceForecasts();
+
+        // Calculations
+        var shareOwnedValue = propertyValue * sharePurchased;
+        var mortgageAmount = shareOwnedValue - deposit;
+
+        // Monthly Mortgage Payment Calculation
+        var monthlyInterestRate = apr / 12;
+        var numberOfPayments = mortgageTerm * 12;
+        var monthlyMortgagePayment = (mortgageAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, numberOfPayments)) /
+                                     (Math.pow(1 + monthlyInterestRate, numberOfPayments) - 1);
+
+        // Total Monthly Payment
+        var totalMonthlyPayment = monthlyMortgagePayment + rent + serviceCharge;
+
+        // Equity Projection after 5 years
+        var remainingBalance = mortgageAmount;
+        var principalPaidInFiveYears = 0;
+
+        for (var i = 0; i < 60; i++) {
+            var interestPayment = remainingBalance * monthlyInterestRate;
+            var principalPayment = monthlyMortgagePayment - interestPayment;
+            principalPaidInFiveYears += principalPayment;
+            remainingBalance -= principalPayment;
+        }
+
+        // Projected Property Value after 5 Years
+        var projectedPropertyValue = propertyValue;
+        for (var i = 0; i < 5; i++) {
+            projectedPropertyValue *= (1 + forecastedAnnualGrowthRates[i]);
+        }
+
+        var projectedShareOwnedValue = projectedPropertyValue * sharePurchased;
+
+        // Equity from Market Growth
+        var equityFromGrowth = projectedShareOwnedValue - shareOwnedValue;
+
+        // Total Equity After Five Years
+        var totalEquityAfterFiveYears = deposit + principalPaidInFiveYears + equityFromGrowth;
+
+        // Equity Gained Over Five Years
+        var totalEquityAtStart = deposit;
+        var equityGained = totalEquityAfterFiveYears - totalEquityAtStart;
+
+        // Average Annual Growth Rate
+        var totalGrowth = projectedPropertyValue / propertyValue;
+        var averageAnnualGrowthRate = Math.pow(totalGrowth, 1/5) - 1;
+        var averageAnnualGrowthRatePercent = (averageAnnualGrowthRate * 100).toFixed(2);
+
+        // Display Results with Comma Separators
+        document.getElementById('ownedShare').innerHTML = "Share Owned: £" + formatNumber(shareOwnedValue.toFixed(2));
+        document.getElementById('totalMortgage').innerHTML = "Total Mortgage Amount: £" + formatNumber(mortgageAmount.toFixed(2));
+        document.getElementById('initialEquity').innerHTML = "Initial Equity (Deposit): £" + formatNumber(deposit.toFixed(2));
+
+        document.getElementById('monthlyMortgagePayment').innerHTML = "Monthly Mortgage Payment: £" + formatNumber(monthlyMortgagePayment.toFixed(2));
+        document.getElementById('monthlyRent').innerHTML = "Monthly Rent & Service Charge: £" + formatNumber((rent + serviceCharge).toFixed(2));
+        document.getElementById('totalMonthlyPayment').innerHTML = "Total Monthly Payment: £" + formatNumber(totalMonthlyPayment.toFixed(2));
+
+        document.getElementById('projectedPropertyValue').innerHTML = "Projected Property Value After 5 Years: £" + formatNumber(projectedPropertyValue.toFixed(2));
+        document.getElementById('equityFromGrowth').innerHTML = "Equity Gained from Market Growth: £" + formatNumber(equityFromGrowth.toFixed(2));
+        document.getElementById('principalPaid').innerHTML = "Equity Gained from Mortgage Payments: £" + formatNumber(principalPaidInFiveYears.toFixed(2));
+        document.getElementById('totalEquityAfterFiveYears').innerHTML = "Total Equity After 5 Years: £" + formatNumber(totalEquityAfterFiveYears.toFixed(2));
+        document.getElementById('equityGained').innerHTML = "Total Equity Gained in 5 Years: £" + formatNumber(equityGained.toFixed(2));
+
+        document.getElementById('growthSummary').innerHTML = "This projection is based on an average annual property growth rate of " + averageAnnualGrowthRatePercent + "% over five years, based on current projected market conditions.";
+
+        document.getElementById('results').style.display = 'block';
+    }
+
+    async function getPropertyPriceForecasts() {
+        // Simulated fetching of property price forecasts
+        // In a real implementation, this function would fetch data from an API
+
+        // Sample forecasted annual growth rates (as decimals)
+        var forecasts = [0.02, 0.025, 0.023, 0.024, 0.022]; // 2%, 2.5%, etc.
+        return forecasts;
+    }
+
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+</script>
+
+</body>
+</html>
