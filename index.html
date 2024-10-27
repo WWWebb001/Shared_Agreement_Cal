@@ -5,7 +5,7 @@
     <title>WWWebb's Shared Agreement Monthly Payment Calculator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Reset some default browser styles */
+        /* Reset and base styles */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -80,40 +80,40 @@
             padding-bottom: 5px;
             margin-bottom: 10px;
         }
-        .results .section p {
+        .results-table {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .results-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .results-row:last-child {
+            border-bottom: none;
+        }
+        .results-label {
+            flex: 1;
             color: #34495e;
-            font-size: 18px;
-            margin: 5px 0;
+            font-size: 16px;
+        }
+        .results-value {
+            flex: 1;
+            color: #2c3e50;
+            font-weight: bold;
+            text-align: right;
+            font-size: 16px;
         }
         /* Responsive styles */
-        @media (max-width: 768px) {
-            .container {
-                width: 90%;
-                padding: 20px;
+        @media (max-width: 600px) {
+            .results-row {
+                flex-direction: column;
+                align-items: flex-start;
             }
-            .input-group input {
-                font-size: 14px;
-            }
-            .calculate-button {
-                font-size: 16px;
-            }
-            .results .section p {
-                font-size: 16px;
-            }
-        }
-        @media (max-width: 480px) {
-            .banner h1 {
-                font-size: 24px;
-            }
-            .container h2 {
-                font-size: 22px;
-            }
-            .calculate-button {
-                font-size: 16px;
-                padding: 12px;
-            }
-            .results .section p {
-                font-size: 14px;
+            .results-value {
+                text-align: left;
+                margin-top: 5px;
             }
         }
     </style>
@@ -158,26 +158,71 @@
 
     <div class="results" id="results" style="display:none;">
         <h3>Calculation Results</h3>
+
         <div class="section">
             <h4>Ownership Details</h4>
-            <p id="ownedShare"></p>
-            <p id="totalMortgage"></p>
-            <p id="initialEquity"></p>
+            <div class="results-table">
+                <div class="results-row">
+                    <div class="results-label">Share Owned:</div>
+                    <div class="results-value" id="ownedShare"></div>
+                </div>
+                <div class="results-row">
+                    <div class="results-label">Total Mortgage Amount:</div>
+                    <div class="results-value" id="totalMortgage"></div>
+                </div>
+                <div class="results-row">
+                    <div class="results-label">Initial Equity (Deposit):</div>
+                    <div class="results-value" id="initialEquity"></div>
+                </div>
+            </div>
         </div>
+
         <div class="section">
             <h4>Monthly Payments</h4>
-            <p id="monthlyMortgagePayment"></p>
-            <p id="monthlyRent"></p>
-            <p id="totalMonthlyPayment"></p>
+            <div class="results-table">
+                <div class="results-row">
+                    <div class="results-label">Monthly Mortgage Payment:</div>
+                    <div class="results-value" id="monthlyMortgagePayment"></div>
+                </div>
+                <div class="results-row">
+                    <div class="results-label">Monthly Rent & Service Charge:</div>
+                    <div class="results-value" id="monthlyRent"></div>
+                </div>
+                <div class="results-row">
+                    <div class="results-label">Total Monthly Payment:</div>
+                    <div class="results-value" id="totalMonthlyPayment"></div>
+                </div>
+            </div>
         </div>
+
         <div class="section">
             <h4>Equity Projection After 5 Years</h4>
-            <p id="projectedPropertyValue"></p>
-            <p id="equityFromGrowth"></p>
-            <p id="principalPaid"></p>
-            <p id="totalEquityAfterFiveYears"></p>
-            <p id="equityGained"></p>
-            <p id="growthSummary"></p>
+            <div class="results-table">
+                <div class="results-row">
+                    <div class="results-label">Projected Property Value After 5 Years:</div>
+                    <div class="results-value" id="projectedPropertyValue"></div>
+                </div>
+                <div class="results-row">
+                    <div class="results-label">Equity from Market Growth:</div>
+                    <div class="results-value" id="equityFromGrowth"></div>
+                </div>
+                <div class="results-row">
+                    <div class="results-label">Equity from Mortgage Payments:</div>
+                    <div class="results-value" id="principalPaid"></div>
+                </div>
+                <div class="results-row">
+                    <div class="results-label">Total Equity After 5 Years:</div>
+                    <div class="results-value" id="totalEquityAfterFiveYears"></div>
+                </div>
+                <div class="results-row">
+                    <div class="results-label">Total Equity Gained in 5 Years:</div>
+                    <div class="results-value" id="equityGained"></div>
+                </div>
+                <div class="results-row">
+                    <div class="results-label">Growth Summary:</div>
+                    <div class="results-value" id="growthSummary"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -244,21 +289,21 @@
         var averageAnnualGrowthRatePercent = (averageAnnualGrowthRate * 100).toFixed(2);
 
         // Display Results with Comma Separators
-        document.getElementById('ownedShare').innerHTML = "Share Owned: £" + formatNumber(shareOwnedValue.toFixed(2));
-        document.getElementById('totalMortgage').innerHTML = "Total Mortgage Amount: £" + formatNumber(mortgageAmount.toFixed(2));
-        document.getElementById('initialEquity').innerHTML = "Initial Equity (Deposit): £" + formatNumber(deposit.toFixed(2));
+        document.getElementById('ownedShare').innerText = "£" + formatNumber(shareOwnedValue.toFixed(2));
+        document.getElementById('totalMortgage').innerText = "£" + formatNumber(mortgageAmount.toFixed(2));
+        document.getElementById('initialEquity').innerText = "£" + formatNumber(deposit.toFixed(2));
 
-        document.getElementById('monthlyMortgagePayment').innerHTML = "Monthly Mortgage Payment: £" + formatNumber(monthlyMortgagePayment.toFixed(2));
-        document.getElementById('monthlyRent').innerHTML = "Monthly Rent & Service Charge: £" + formatNumber((rent + serviceCharge).toFixed(2));
-        document.getElementById('totalMonthlyPayment').innerHTML = "Total Monthly Payment: £" + formatNumber(totalMonthlyPayment.toFixed(2));
+        document.getElementById('monthlyMortgagePayment').innerText = "£" + formatNumber(monthlyMortgagePayment.toFixed(2));
+        document.getElementById('monthlyRent').innerText = "£" + formatNumber((rent + serviceCharge).toFixed(2));
+        document.getElementById('totalMonthlyPayment').innerText = "£" + formatNumber(totalMonthlyPayment.toFixed(2));
 
-        document.getElementById('projectedPropertyValue').innerHTML = "Projected Property Value After 5 Years: £" + formatNumber((projectedPropertyValue * sharePurchased).toFixed(2));
-        document.getElementById('equityFromGrowth').innerHTML = "Equity Gained from Market Growth: £" + formatNumber(equityFromGrowth.toFixed(2));
-        document.getElementById('principalPaid').innerHTML = "Equity Gained from Mortgage Payments: £" + formatNumber(principalPaidInFiveYears.toFixed(2));
-        document.getElementById('totalEquityAfterFiveYears').innerHTML = "Total Equity After 5 Years: £" + formatNumber(totalEquityAfterFiveYears.toFixed(2));
-        document.getElementById('equityGained').innerHTML = "Total Equity Gained in 5 Years: £" + formatNumber(equityGained.toFixed(2));
+        document.getElementById('projectedPropertyValue').innerText = "£" + formatNumber((projectedPropertyValue * sharePurchased).toFixed(2));
+        document.getElementById('equityFromGrowth').innerText = "£" + formatNumber(equityFromGrowth.toFixed(2));
+        document.getElementById('principalPaid').innerText = "£" + formatNumber(principalPaidInFiveYears.toFixed(2));
+        document.getElementById('totalEquityAfterFiveYears').innerText = "£" + formatNumber(totalEquityAfterFiveYears.toFixed(2));
+        document.getElementById('equityGained').innerText = "£" + formatNumber(equityGained.toFixed(2));
 
-        document.getElementById('growthSummary').innerHTML = "This projection is based on an average annual property growth rate of " + averageAnnualGrowthRatePercent + "% over five years, based on current projected market conditions.";
+        document.getElementById('growthSummary').innerText = "Based on an average annual growth rate of " + averageAnnualGrowthRatePercent + "%";
 
         document.getElementById('results').style.display = 'block';
     }
